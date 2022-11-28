@@ -30,13 +30,12 @@ export class HomeComponent {
     });
     this.authorService.getAll().subscribe((data: Author[]) => {
       this.authors = data;
-      console.log(this.authors);
     });
   }
 
   openDialog(element: PeriodicElement | null): void {
     const dialogRef = this.dialog.open(ElementDialogComponent, {
-      width: '250px',
+      width: '500px',
       data: element === null ? {
         id: null,
         author: '',
@@ -57,7 +56,7 @@ export class HomeComponent {
     dialogRef.afterClosed().subscribe(result => {
       if (result !== undefined) {
         if (this.dataSource.map((element) => element.id).includes(result.id)) {
-          this.dataSource[result.id - 1] = result;
+          this.editElement(result.id, result);
           this.table.renderRows();
         } else {
           this.periodicElementService.create(result).subscribe((result: PeriodicElement) => {
@@ -75,20 +74,12 @@ export class HomeComponent {
     });
   }
 
-
-  // editElement(element: PeriodicElement): void {
-  //   this.openDialog(element);
-  // }
-
   editElement(id: number, element: PeriodicElement): void {
-    this.openDialog(element)
-    this.periodicElementService.update(id, element).subscribe(() => {
-      this.dataSource.forEach((elementTwo) => {
-        if (element.id === id) {
-          element = elementTwo;
-        }
-      });
-    });
-  }
-
+    this.periodicElementService.update(id, element).subscribe((result: PeriodicElement) => {
+      this.dataSource = this.dataSource.map(
+        (element) => element.id === id ? result : element);
+        result.author = this.authors.find((author) => author.id == result.author_id) as Author;
+    }
+    );
+}
 }

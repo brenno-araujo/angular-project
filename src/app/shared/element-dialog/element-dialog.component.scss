@@ -1,3 +1,31 @@
-select {
-  width: 84%;
+label {
+  font-size: 1.0rem;
+  color: #333;
 }
+
+input {
+  font-size: 1.0rem;
+  color: #333;
+  width: 90%;
+
+}
+
+select {
+  font-size: 1.0rem;
+  color: #333;
+  width: 90%;
+}
+
+.modal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 600px;
+}
+
+button {
+  font-size: 1.0rem;
+  color: #333;
+  width: 50%;
+}
+

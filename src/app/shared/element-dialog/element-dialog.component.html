@@ -1,30 +1,30 @@
 <h1 *ngIf="!isChange" mat-dialog-title>Create Element</h1>
 <h1 *ngIf="isChange" mat-dialog-title>Edit Element</h1>
-<div mat-dialog-content>
+<div mat-dialog-content modal>
   <mat-form-field appearance="fill">
-    <mat-label>id</mat-label>
+    <label>Id</label>
     <input matInput [(ngModel)]="data.id" [disabled]="isChange" />
   </mat-form-field>
   <mat-form-field appearance="fill">
-    <mat-label>Title</mat-label>
+    <label>Title</label>
     <input matInput [(ngModel)]="data.title">
   </mat-form-field>
   <mat-form-field appearance="fill">
-    <mat-label>Author</mat-label>
+    <label>Author</label>
     <!-- <input matInput [(ngModel)]="data.author"> -->
-    <select matInput [(ngModel)]="data.authors">
+    <select matInput [(ngModel)]="data.author_id">
       <option *ngFor="let author of data.authors" [value]="author.id" [selected]="author.id == data.author_id">
         {{author.name}}
       </option>
     </select>
   </mat-form-field>
   <mat-form-field appearance="fill">
-    <mat-label>Barcode</mat-label>
+    <label>Barcode</label>
     <input matInput [(ngModel)]="data.barcode">
   </mat-form-field>
 </div>
 <div mat-dialog-actions>
-  <button mat-button (click)="onCancel()">Cancel</button>
-  <button mat-button *ngIf="!isChange" [mat-dialog-close]="data" cdkFocusInitial>Create</button>
-  <button mat-button *ngIf="isChange" [mat-dialog-close]="data" cdkFocusInitial>Update</button>
+  <button mat-raised-button color="basic" (click)="onCancel()">Cancel</button>
+  <button mat-raised-button color="primary" *ngIf="!isChange" [mat-dialog-close]="data" cdkFocusInitial>Create</button>
+  <button mat-raised-button color="primary" *ngIf="isChange" [mat-dialog-close]="data" cdkFocusInitial>Update</button>
 </div>
