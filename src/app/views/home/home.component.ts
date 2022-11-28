@@ -1,76 +1,94 @@
 import { Component, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatTable } from '@angular/material/table';
+import { Author } from 'src/app/models/Author';
+import { AuthorService } from 'src/app/services/author.service';
+import { PeriodicElement } from 'src/app/models/PeriodicElement';
+import { PeriodicElementService } from 'src/app/services/periodicElement.service';
 import { ElementDialogComponent } from 'src/app/shared/element-dialog/element-dialog.component';
-
-export interface PeriodicElement {
-  name: string;
-  position: number;
-  weight: number;
-  symbol: string;
-}
-
-const ELEMENT_DATA: PeriodicElement[] = [
-  {position: 1, name: 'Hydrogen', weight: 1.0079, symbol: 'H'},
-  {position: 2, name: 'Helium', weight: 4.0026, symbol: 'He'},
-  {position: 3, name: 'Lithium', weight: 6.941, symbol: 'Li'},
-  {position: 4, name: 'Beryllium', weight: 9.0122, symbol: 'Be'},
-  {position: 5, name: 'Boron', weight: 10.811, symbol: 'B'},
-  {position: 6, name: 'Carbon', weight: 12.0107, symbol: 'C'},
-  {position: 7, name: 'Nitrogen', weight: 14.0067, symbol: 'N'},
-  {position: 8, name: 'Oxygen', weight: 15.9994, symbol: 'O'},
-  {position: 9, name: 'Fluorine', weight: 18.9984, symbol: 'F'},
-  {position: 10, name: 'Neon', weight: 20.1797, symbol: 'Ne'},
-];
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
-  styleUrls: ['./home.component.scss']
+  styleUrls: ['./home.component.scss'],
+  providers: [PeriodicElementService, AuthorService]
 })
 export class HomeComponent {
-  displayedColumns: string[] = ['position', 'name', 'weight', 'symbol','actions'];
-  dataSource = ELEMENT_DATA;
+  displayedColumns: string[] = ['id', 'title', 'author', 'barcode', 'actions'];
+  dataSource!: PeriodicElement[];
+  authors!: Author[];
   @ViewChild(MatTable)
   table!: MatTable<any>;
 
   constructor(
-    public dialog: MatDialog
-  ) { }
+    public dialog: MatDialog,
+    public periodicElementService: PeriodicElementService,
+    public authorService: AuthorService
+  ) {
+    this.periodicElementService.getAll().subscribe((data: PeriodicElement[]) => {
+      this.dataSource = data;
+    });
+    this.authorService.getAll().subscribe((data: Author[]) => {
+      this.authors = data;
+      console.log(this.authors);
+    });
+  }
 
   openDialog(element: PeriodicElement | null): void {
     const dialogRef = this.dialog.open(ElementDialogComponent, {
       width: '250px',
       data: element === null ? {
-        position: null,
-        name: '',
-        weight: '',
-        symbol: ''} : {
-        position: element.position,
-        name: element.name,
-        weight: element.weight,
-        symbol: element.symbol
+        id: null,
+        author: '',
+        author_id: '',
+        title: '',
+        barcode: '',
+        authors: []
+      } : {
+        id: element.id,
+        author: element.author.name,
+        author_id: element.author_id,
+        title: element.title,
+        barcode: element.barcode,
+        authors: this.authors
         }
     });
 
     dialogRef.afterClosed().subscribe(result => {
       if (result !== undefined) {
-        if (this.dataSource.map((element) => element.position).includes(result.position)) {
-          this.dataSource[result.position - 1] = result;
+        if (this.dataSource.map((element) => element.id).includes(result.id)) {
+          this.dataSource[result.id - 1] = result;
           this.table.renderRows();
         } else {
+          this.periodicElementService.create(result).subscribe((result: PeriodicElement) => {
           this.dataSource.push(result);
           this.table.renderRows();
+          });
         }
       };
     });
   }
 
-  deleteElement(position: number): void {
-    this.dataSource = this.dataSource.filter((element) => element.position !== position);
+  deleteElement(id: number): void {
+    this.periodicElementService.delete(id).subscribe(() => {
+    this.dataSource = this.dataSource.filter((element) => element.id !== id);
+    });
   }
 
-  editElement(element: PeriodicElement): void {
-    this.openDialog(element);
+
+  // editElement(element: PeriodicElement): void {
+  //   this.openDialog(element);
+  // }
+
+  editElement(id: number, element: PeriodicElement): void {
+    this.openDialog(element)
+    this.periodicElementService.update(id, element).subscribe(() => {
+      this.dataSource.forEach((elementTwo) => {
+        if (element.id === id) {
+          element = elementTwo;
+        }
+      });
+    });
   }
+
 }

@@ -2,20 +2,25 @@
 <h1 *ngIf="isChange" mat-dialog-title>Edit Element</h1>
 <div mat-dialog-content>
   <mat-form-field appearance="fill">
-    <mat-label>Position</mat-label>
-    <input matInput [(ngModel)]="data.position" [disabled]="isChange" />
+    <mat-label>id</mat-label>
+    <input matInput [(ngModel)]="data.id" [disabled]="isChange" />
   </mat-form-field>
   <mat-form-field appearance="fill">
-    <mat-label>Name</mat-label>
-    <input matInput [(ngModel)]="data.name">
+    <mat-label>Title</mat-label>
+    <input matInput [(ngModel)]="data.title">
   </mat-form-field>
   <mat-form-field appearance="fill">
-    <mat-label>Weight</mat-label>
-    <input matInput [(ngModel)]="data.weight">
+    <mat-label>Author</mat-label>
+    <!-- <input matInput [(ngModel)]="data.author"> -->
+    <select matInput [(ngModel)]="data.authors">
+      <option *ngFor="let author of data.authors" [value]="author.id" [selected]="author.id == data.author_id">
+        {{author.name}}
+      </option>
+    </select>
   </mat-form-field>
   <mat-form-field appearance="fill">
-    <mat-label>Symbol</mat-label>
-    <input matInput [(ngModel)]="data.symbol">
+    <mat-label>Barcode</mat-label>
+    <input matInput [(ngModel)]="data.barcode">
   </mat-form-field>
 </div>
 <div mat-dialog-actions>
